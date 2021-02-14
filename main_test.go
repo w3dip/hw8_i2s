@@ -46,58 +46,59 @@ type Complex struct {
 	Blocks     []IDBlock
 }
 
-//func TestComplex(t *testing.T) {
-//	smpl := Simple{
-//		ID:       42,
-//		Username: "rvasily",
-//		Active:   true,
-//	}
-//	expected := &Complex{
-//		SubSimple:  smpl,
-//		ManySimple: []Simple{smpl, smpl},
-//		Blocks:     []IDBlock{IDBlock{42}, IDBlock{42}},
-//	}
-//
-//	jsonRaw, _ := json.Marshal(expected)
-//	// fmt.Println(string(jsonRaw))
-//
-//	var tmpData interface{}
-//	json.Unmarshal(jsonRaw, &tmpData)
-//
-//	result := new(Complex)
-//	err := i2s(tmpData, result)
-//
-//	if err != nil {
-//		t.Errorf("unexpected error: %v", err)
-//	}
-//	if !reflect.DeepEqual(expected, result) {
-//		t.Errorf("results not match\nGot:\n%#v\nExpected:\n%#v", result, expected)
-//	}
-//}
-//
-//func TestSlice(t *testing.T) {
-//	smpl := Simple{
-//		ID:       42,
-//		Username: "rvasily",
-//		Active:   true,
-//	}
-//	expected := []Simple{smpl, smpl}
-//
-//	jsonRaw, _ := json.Marshal(expected)
-//
-//	var tmpData interface{}
-//	json.Unmarshal(jsonRaw, &tmpData)
-//
-//	result := []Simple{}
-//	err := i2s(tmpData, &result)
-//
-//	if err != nil {
-//		t.Errorf("unexpected error: %v", err)
-//	}
-//	if !reflect.DeepEqual(expected, result) {
-//		t.Errorf("results not match\nGot:\n%#v\nExpected:\n%#v", result, expected)
-//	}
-//}
+func TestComplex(t *testing.T) {
+	smpl := Simple{
+		ID:       42,
+		Username: "rvasily",
+		Active:   true,
+	}
+	expected := &Complex{
+		SubSimple:  smpl,
+		ManySimple: []Simple{smpl, smpl},
+		Blocks:     []IDBlock{IDBlock{42}, IDBlock{42}},
+	}
+
+	jsonRaw, _ := json.Marshal(expected)
+	// fmt.Println(string(jsonRaw))
+
+	var tmpData interface{}
+	json.Unmarshal(jsonRaw, &tmpData)
+
+	result := new(Complex)
+	err := i2s(tmpData, result)
+
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+	if !reflect.DeepEqual(expected, result) {
+		t.Errorf("results not match\nGot:\n%#v\nExpected:\n%#v", result, expected)
+	}
+}
+
+func TestSlice(t *testing.T) {
+	smpl := Simple{
+		ID:       42,
+		Username: "rvasily",
+		Active:   true,
+	}
+	expected := []Simple{smpl, smpl}
+
+	jsonRaw, _ := json.Marshal(expected)
+
+	var tmpData interface{}
+	json.Unmarshal(jsonRaw, &tmpData)
+
+	result := []Simple{}
+	err := i2s(tmpData, &result)
+
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+	if !reflect.DeepEqual(expected, result) {
+		t.Errorf("results not match\nGot:\n%#v\nExpected:\n%#v", result, expected)
+	}
+}
+
 //
 //type ErrorCase struct {
 //	Result   interface{}

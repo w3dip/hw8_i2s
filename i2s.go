@@ -40,19 +40,70 @@ func SetField(obj interface{}, name string, value interface{}) error {
 	return nil
 }
 
+// ptr wraps the given value with pointer: V => *V, *V => **V, etc.
+func ptr(v reflect.Value) reflect.Value {
+	pt := reflect.PtrTo(v.Type()) // create a *T type.
+	pv := reflect.New(pt.Elem())  // create a reflect.Value of type *T.
+	pv.Elem().Set(v)              // sets pv to point to underlying value of v.
+	return pv
+}
+
 func i2s(data interface{}, out interface{}) error {
-	source := make(map[string]interface{})
-	iter := reflect.ValueOf(data).MapRange()
-	for iter.Next() {
-		key := iter.Key().String()
-		value := iter.Value().Interface()
-		source[key] = value
-		err := SetField(out, key, value)
-		if err != nil {
-			return err
+	dataType := reflect.TypeOf(data)
+	switch dataType.Kind() {
+	case reflect.Slice:
+		val := reflect.ValueOf(data)
+		valuePtr := reflect.ValueOf(out)
+		value := valuePtr.Elem()
+		elementType := reflect.TypeOf(out).Elem()
+		value.Set(reflect.MakeSlice(elementType, val.Len(), val.Len()))
+		for i := 0; i < val.Len(); i++ {
+			//item := reflect.New(val.Index(i).Type()).Elem()
+			//item := reflect.New(elementType)//.Elem()
+			//err := i2s(val.Index(i).Elem().Interface(), item.Interface())
+			out_new := ptr(value.Index(i)).Interface()
+			err := i2s(val.Index(i).Elem().Interface(), out_new)
+			if err != nil {
+				return err
+			}
+			fmt.Printf("After set %v\n", out_new)
+			//result = append(result, &item)
+			value.Index(i).Set(reflect.ValueOf(out_new).Elem())
 		}
-		//fmt.Print(key)
-		//fmt.Print(value)
+		//result := reflect.MakeSlice(dataType, val.Len(), val.Len())
+		//for i := 0; i < val.Len(); i++ {
+		//	item := reflect.New(val.Index(i).Type())
+		//	err := i2s(val.Index(i), item)
+		//	if err != nil {
+		//		return err
+		//	}
+		//	result = append(result, &item)
+		//}
+		//out = result.Interface()
+		//reflect.ValueOf(out).Set(result)
+	case reflect.Map:
+		source := make(map[string]interface{})
+		iter := reflect.ValueOf(data).MapRange()
+		for iter.Next() {
+			key := iter.Key().String()
+			value := iter.Value().Interface()
+			source[key] = value
+			err := SetField(out, key, value)
+			if err != nil {
+				return err
+			}
+			//fmt.Print(key)
+			//fmt.Print(value)
+		}
+		//return nil
+	case reflect.Struct:
+		val := reflect.ValueOf(data)
+		for i := 0; i < val.NumField(); i++ {
+			err := SetField(out, val.Type().Field(i).Name, val.Field(i).Elem())
+			if err != nil {
+				return err
+			}
+		}
 	}
 	//fmt.Println(source)
 	//val := reflect.ValueOf(out)
