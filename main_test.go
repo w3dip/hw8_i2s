@@ -99,66 +99,65 @@ func TestSlice(t *testing.T) {
 	}
 }
 
-//
-//type ErrorCase struct {
-//	Result   interface{}
-//	JsonData string
-//}
-//
-//// аккуратно в этом тесте
-//// писать надо именно в то что пришло
-//func TestErrors(t *testing.T) {
-//	cases := []ErrorCase{
-//		// "Active":"DA" - string вместо bool
-//		ErrorCase{
-//			&Simple{},
-//			`{"ID":42,"Username":"rvasily","Active":"DA"}`,
-//		},
-//		// "ID":"42" - string вместо int
-//		ErrorCase{
-//			&Simple{},
-//			`{"ID":"42","Username":"rvasily","Active":true}`,
-//		},
-//		// "Username":100500 - int вместо string
-//		ErrorCase{
-//			&Simple{},
-//			`{"ID":42,"Username":100500,"Active":true}`,
-//		},
-//		// "ManySimple":{} - ждём слайс, получаем структуру
-//		ErrorCase{
-//			&Complex{},
-//			`{"SubSimple":{"ID":42,"Username":"rvasily","Active":true},"ManySimple":{}}`,
-//		},
-//		// "SubSimple":true - ждём структуру, получаем bool
-//		ErrorCase{
-//			&Complex{},
-//			`{"SubSimple":true,"ManySimple":[{"ID":42,"Username":"rvasily","Active":true}]}`,
-//		},
-//		// ожидаем структуру - пришел массив
-//		ErrorCase{
-//			&Simple{},
-//			`[{"ID":42,"Username":"rvasily","Active":true}]`,
-//		},
-//		// Simple{} ( без амперсанта, т.е. структура, а не указатель на структуру )
-//		// пришел не ссылочный тип - мы не сможем вернуть результат
-//		ErrorCase{
-//			Simple{},
-//			`{"ID":42,"Username":"rvasily","Active":true}`,
-//		},
-//	}
-//	for idx, item := range cases {
-//		var tmpData interface{}
-//		json.Unmarshal([]byte(item.JsonData), &tmpData)
-//		inType := reflect.ValueOf(item.Result).Type()
-//		err := i2s(tmpData, item.Result)
-//		outType := reflect.ValueOf(item.Result).Type()
-//
-//		if err == nil {
-//			t.Errorf("[%d] expected error here", idx)
-//			continue
-//		}
-//		if inType != outType {
-//			t.Errorf("results type not match\nGot:\n%#v\nExpected:\n%#v", outType, inType)
-//		}
-//	}
-//}
+type ErrorCase struct {
+	Result   interface{}
+	JsonData string
+}
+
+// аккуратно в этом тесте
+// писать надо именно в то что пришло
+func TestErrors(t *testing.T) {
+	cases := []ErrorCase{
+		// "Active":"DA" - string вместо bool
+		ErrorCase{
+			&Simple{},
+			`{"ID":42,"Username":"rvasily","Active":"DA"}`,
+		},
+		//// "ID":"42" - string вместо int
+		ErrorCase{
+			&Simple{},
+			`{"ID":"42","Username":"rvasily","Active":true}`,
+		},
+		//// "Username":100500 - int вместо string
+		ErrorCase{
+			&Simple{},
+			`{"ID":42,"Username":100500,"Active":true}`,
+		},
+		// "ManySimple":{} - ждём слайс, получаем структуру
+		ErrorCase{
+			&Complex{},
+			`{"SubSimple":{"ID":42,"Username":"rvasily","Active":true},"ManySimple":{}}`,
+		},
+		// "SubSimple":true - ждём структуру, получаем bool
+		ErrorCase{
+			&Complex{},
+			`{"SubSimple":true,"ManySimple":[{"ID":42,"Username":"rvasily","Active":true}]}`,
+		},
+		// ожидаем структуру - пришел массив
+		ErrorCase{
+			&Simple{},
+			`[{"ID":42,"Username":"rvasily","Active":true}]`,
+		},
+		// Simple{} ( без амперсанта, т.е. структура, а не указатель на структуру )
+		// пришел не ссылочный тип - мы не сможем вернуть результат
+		ErrorCase{
+			Simple{},
+			`{"ID":42,"Username":"rvasily","Active":true}`,
+		},
+	}
+	for idx, item := range cases {
+		var tmpData interface{}
+		json.Unmarshal([]byte(item.JsonData), &tmpData)
+		inType := reflect.ValueOf(item.Result).Type()
+		err := i2s(tmpData, item.Result)
+		outType := reflect.ValueOf(item.Result).Type()
+
+		if err == nil {
+			t.Errorf("[%d] expected error here", idx)
+			continue
+		}
+		if inType != outType {
+			t.Errorf("results type not match\nGot:\n%#v\nExpected:\n%#v", outType, inType)
+		}
+	}
+}
