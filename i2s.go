@@ -32,7 +32,21 @@ func SetField(obj interface{}, name string, value interface{}) error {
 		//	}
 		//}
 		//return errors.New("Provided value type didn't match obj field type")
-		structFieldValue.Set(val.Convert(structFieldType))
+		dataType := reflect.TypeOf(value)
+		switch dataType.Kind() {
+		case reflect.Map, reflect.Slice:
+			out_new := ptr(structFieldValue).Interface()
+			//out_new := structFieldValue.Interface()
+			err := i2s(val.Interface(), out_new)
+			if err != nil {
+				return err
+			}
+			structFieldValue.Set(reflect.ValueOf(out_new).Elem())
+		//case reflect.Slice:
+
+		default:
+			structFieldValue.Set(val.Convert(structFieldType))
+		}
 		return nil
 	}
 
@@ -88,9 +102,11 @@ func i2s(data interface{}, out interface{}) error {
 			key := iter.Key().String()
 			value := iter.Value().Interface()
 			source[key] = value
-			err := SetField(out, key, value)
-			if err != nil {
-				return err
+			if value != nil {
+				err := SetField(out, key, value)
+				if err != nil {
+					return err
+				}
 			}
 			//fmt.Print(key)
 			//fmt.Print(value)
